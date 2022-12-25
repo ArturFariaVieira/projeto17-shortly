@@ -9,19 +9,19 @@ export default function schemasValidationMiddleware(req, res, next) {
     if( !url && !confirmPassword){
         const validation = signinSchema.validate(req.body);
         if (validation.error) {
-            return res.send(validation.error).status(422);
+            return res.send(validation.error.message).status(422);
           }
     }
     if (url){
         const validation = urlSchema.validate(req.body);
         if (validation.error) {
-            return res.send(validation.error).status(422);
+            return res.send(validation.error.message).status(422);
           }
     }
-    else {
+    if(!url && confirmPassword) {
         const validation = signupSchema.validate(req.body);
         if (validation.error) {
-            return res.send(validation.error).status(422);
+            return res.send(validation.error.message).status(422);
           }
     }
 
