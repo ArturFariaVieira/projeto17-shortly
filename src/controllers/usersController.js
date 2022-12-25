@@ -6,7 +6,7 @@ export async function getMe(req, res){
     try{
         const urls = await connection.query(`SELECT id, "shortUrl", url, "visitCount" FROM links WHERE links."userId" = $1 ORDER BY id`, [id]);
         let visits = 0;
-        const totalvisits = urls.rows.map((row) => {
+        urls.rows.map((row) => {
         visits+= Number(row.visitCount);
         }
         )
