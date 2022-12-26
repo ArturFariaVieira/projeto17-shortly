@@ -33,7 +33,7 @@ export async function signIn(req, res) {
 
     try {
       const session = await insertSession(id, token)
-      res.send({token, name: user.name });
+      res.send(token);
     }
     catch (err) {
       console.log(err);
