@@ -5,7 +5,7 @@ export async function tokenValidationMiddleware(req, res, next) {
     const { authorization } = req.headers;
     const token = authorization?.replace('Bearer ', '')
     if (!token) {
-        return res.sendStatus(401) 
+        return res.send("q").status(401) 
        }
     try {
         const session = await connection.query(`SELECT * FROM sessions WHERE token = $1`, [token]);
