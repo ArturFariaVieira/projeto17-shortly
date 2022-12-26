@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import schemasValidationMiddleware from '../middlewares/schemasMiddleware.js';
+import { schemasValidationMiddleware } from '../middlewares/schemasMiddleware.js';
 import { shortenUrl, geturlbyId, openurl, deleteUrl } from '../controllers/urlsController.js';
 import { tokenValidationMiddleware } from '../middlewares/tokenvalidationMiddleware.js';
 

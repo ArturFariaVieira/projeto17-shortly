@@ -26,6 +26,9 @@ export async function geturlbyId (req, res){
     const {id} = req.params;
     try{
         const link = await findLinkById(id);
+        if(link.rows.length<1){
+            return res.sendStatus(404)
+        }
         const {shortUrl, url} = link.rows[0]
         if(!id || !shortUrl){
             return res.sendStatus(404);

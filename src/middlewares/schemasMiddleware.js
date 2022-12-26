@@ -2,7 +2,7 @@ import signinSchema from "../schemas/signinSchema.js";
 import signupSchema from "../schemas/signupSchema.js";
 import urlSchema from "../schemas/urlSchema.js";
 
-export default function schemasValidationMiddleware(req, res, next) {
+export async function schemasValidationMiddleware(req, res, next) {
 
     const { confirmPassword, url } = req.body;
 
