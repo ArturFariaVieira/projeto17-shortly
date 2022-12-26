@@ -44,7 +44,6 @@ export async function openurl (req, res){
     const {shortUrl} = req.params;
     try{
         const link = await findLinkByShort(shortUrl)
-        console.log(link.rows[0].url)
         if(link.rows.length < 1){
             return res.sendStatus(404);
         }
@@ -62,7 +61,6 @@ export async function openurl (req, res){
 export async function deleteUrl(req, res){
     const {id} = req.params;
     const user = res.locals.user;
-    console.log(user)
 
     try{
         const url = await findLinkById(id)

@@ -1,5 +1,4 @@
 import bcrypt from 'bcrypt';
-import  connection  from '../database.js';
 import { v4 as uuid } from 'uuid';
 import { insertSession } from "../repository/sesssionsRepository.js"
 import { getUser, insertUser } from '../repository/usersRepository.js';

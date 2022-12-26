@@ -6,9 +6,9 @@ import rankingRouter from "./rankingRouter.js";
 
 
 const router = Router();
-router.use(authRouter);
 router.use(urlsRouter);
-router.use(usersRouter);
 router.use(rankingRouter);
+router.use(usersRouter);
+router.use(authRouter);
 
 export default router;
