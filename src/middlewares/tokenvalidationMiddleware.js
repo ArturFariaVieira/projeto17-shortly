@@ -1,22 +1,24 @@
 import connection from "../database.js";
+import {findSession} from "../repository/sesssionsRepository.js"
+import { getUserById } from "../repository/usersRepository.js";
 
 
 export async function tokenValidationMiddleware(req, res, next) {
     const { authorization } = req.headers;
     const token = authorization?.replace('Bearer ', '')
     if (!token) {
-        return res.send("q").status(401) 
+        return res.sendStatus(401) 
        }
     try {
-        const session = await connection.query(`SELECT * FROM sessions WHERE token = $1`, [token]);
+        const session = await findSession(token);
         if (session.rows.length < 1 ) {
-            return res.send("1").status(401)
+            return res.sendStatus(401)
         }
         const expired = (Date.now() - session.rows[0].createdAt + 9000000 > 0);
         if(expired){
-           return res.sendStatus(401);
+           return res.status(401).send("Token expirado, refaça login");
         }
-        const user = await connection.query(`SELECT * FROM users WHERE id = $1`, [session.rows[0].userId])
+        const user = await getUserById(session)
         if (user.rows.length < 1) {
             return res.sendStatus(401)        }
 

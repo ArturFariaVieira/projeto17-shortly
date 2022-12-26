@@ -1,6 +1,8 @@
 import bcrypt from 'bcrypt';
 import  connection  from '../database.js';
 import { v4 as uuid } from 'uuid';
+import { insertSession } from "../repository/sesssionsRepository.js"
+import { getUser, insertUser } from '../repository/usersRepository.js';
 
 
 export async function signUp(req, res) {
@@ -9,11 +11,11 @@ export async function signUp(req, res) {
 
   
   try {
-    const alreadyexists = await connection.query(`SELECT * FROM users where email = $1`, [email]);
+    const alreadyexists = await getUser(email);
     if(alreadyexists.rows.length > 0){
         return res.sendStatus(409)
     }
-    const newuser = await connection.query(`INSERT INTO users (name, email, password) VALUES ($1, $2, $3); `, [name, email, passwordHash] )
+    const newuser = await insertUser(name, email, passwordHash)
     res.sendStatus(201);
   }
   catch (err) {
@@ -24,13 +26,13 @@ export async function signUp(req, res) {
 
 export async function signIn(req, res) {
   const { email, password } = req.body;
-  const user = await connection.query(`SELECT * FROM users where email = $1`, [email]);
+  const user = await getUser(email);
   if (user.rows.length > 0 && bcrypt.compareSync(password, user.rows[0].password)) {
     const token = uuid();
     const id = user.rows[0].id
 
     try {
-      const session = await connection.query(`INSERT INTO sessions ("userId", token) VALUES ($1, $2)`, [id, token])
+      const session = await insertSession(id, token)
       res.send({token, name: user.name });
     }
     catch (err) {

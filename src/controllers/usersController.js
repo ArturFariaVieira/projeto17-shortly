@@ -1,10 +1,11 @@
 import  connection  from '../database.js';
+import { getMylinks } from '../repository/linksRepository.js';
 
 export async function getMe(req, res){
     const {id, name} = res.locals.user;
 
     try{
-        const urls = await connection.query(`SELECT id, "shortUrl", url, "visitCount" FROM links WHERE links."userId" = $1 ORDER BY id`, [id]);
+        const urls = await getMylinks(id);
         let visits = 0;
         urls.rows.map((row) => {
         visits+= Number(row.visitCount);

@@ -1,5 +1,6 @@
 import  connection  from '../database.js';
 import { customAlphabet } from 'nanoid';
+import { insertLink, findLinkById, findLinkByShort, updateLinkVisitCount, deleteUrlById } from '../repository/linksRepository.js';
 
 
 export async function shortenUrl(req, res){
@@ -10,8 +11,8 @@ export async function shortenUrl(req, res){
 
     try{
         
-        const newurl = await connection.query(`INSERT INTO links ("shortUrl", url, "userId") VALUES ($1, $2, $3); `, [shorturl, url, user.id]);
-        res.send({shortUrl: shorturl}).status(201);
+        const newurl = await insertLink (shorturl, url, user);
+        res.status(201).send({shortUrl: shorturl});
     }
     catch(err){
         console.log(err);
@@ -24,11 +25,12 @@ export async function shortenUrl(req, res){
 export async function geturlbyId (req, res){
     const {id} = req.params;
     try{
-        const url = await connection.query(`SELECT links.id, links."shortUrl", url FROM links WHERE id = $1`, [id]);
-        if(url.rows.length < 1){
+        const link = await findLinkById(id);
+        const {shortUrl, url} = link.rows[0]
+        if(!id || !shortUrl){
             return res.sendStatus(404);
         }
-        return res.send(url.rows[0]);
+        return res.status(200).send({id, shortUrl, url});
     }catch(err){
         console.log(err);
         res.sendStatus(500);
@@ -38,12 +40,14 @@ export async function geturlbyId (req, res){
 export async function openurl (req, res){
     const {shortUrl} = req.params;
     try{
-        const url = await connection.query(`SELECT * FROM links WHERE "shortUrl" = $1`, [shortUrl]);
-        if(url.rows.length < 1){
+        const link = await findLinkByShort(shortUrl)
+        console.log(link.rows[0].url)
+        if(link.rows.length < 1){
             return res.sendStatus(404);
         }
-        const visit = await connection.query(`UPDATE links SET "visitCount" = links."visitCount" +1 WHERE id = $1;`, [url.rows[0].id])
-        res.status(301).redirect(url.rows[0].url);
+        const visit = await updateLinkVisitCount(link)
+
+        res.status(301).redirect(link.rows[0].url);
         
     }catch (err){
         console.log(err);
@@ -58,7 +62,7 @@ export async function deleteUrl(req, res){
     console.log(user)
 
     try{
-        const url = await connection.query(`SELECT * FROM links WHERE id = $1`, [id]);
+        const url = await findLinkById(id)
         if(url.rows.length < 1 ){
             return res.sendStatus(404);
         }
@@ -66,7 +70,7 @@ export async function deleteUrl(req, res){
             console.log(url.rows[0].userId)
             return res.sendStatus(401);
         }
-        await connection.query(`DELETE FROM links WHERE id = $1`, [id])
+        await deleteUrlById(id)
         res.sendStatus(204);
     }catch(err){
         console.log(err);
